@@ -3,12 +3,36 @@
 {% block title %}
 
 {% endblock %}
+{% block topnav %}
+    <a href="" class="nav-link-top" data-group="first">First Group</a>
+    <a href="" class="nav-link-top" data-group="second">Second Group</a>
+    <a href="" class="nav-link-top" data-group="third">Third Group</a>
+{% endblock %}
+{% block leftnav %}
+    <div id="channels">
+    </div>
+    <button id="create_channel">Create a new channel</button>
+{% endblock %}
 {% block main %}
-<form id="display_name">
-    <div>Type in your display name that will eventually be associated with every your message.</div>
-    <input id="name" type="text" autofocus autocomplete="off" placeholder="Display name">
-    <button>OK</button>
-</form>
+    <form id="display_name">
+        <div>Type in your display name that will eventually be associated with every your message.</div>
+        <input id="name" type="text" autofocus autocomplete="off" placeholder="Display name">
+        <button>OK</button>
+    </form>
 
-TODO. <div id="user"></div>
+    <form id="new_channel">
+        <input id="channel" type="text" autofocus autocomplete="off" placeholder="New channel">
+        <button>OK</button>
+    </form>
+
+    <div id="posts">
+    </div>
+
+    <form id="new_post">
+        <input id="post" type="text" autofocus autocomplete="off" placeholder="New post">
+        <button>OK</button>
+    </form>
+
+    <div id='test'></div>
+
 {% endblock %}

@@ -1,3 +1,65 @@
 #display_name {
     display: none;
 }
+
+#new_channel {
+    display: none;
+}
+
+.topnav {
+    background-color: #4CAF50;
+    overflow: hidden; }
+    .topnav a {
+      float: left;
+      color: #ddd;
+      text-align: center;
+      padding: 10px 40px;
+      text-decoration: none;
+      font-size: 18px; }
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black; }
+      .topnav a.active_top {
+        background-color: #44803f;
+        color: #ddd; }
+
+.leftnav {
+    background-color: #4cafa7;
+    overflow: hidden; }
+    .leftnav a {
+      float: left;
+      color: #ddd;
+      text-align: left;
+      padding: 10px 10px;
+      text-decoration: none;
+      font-size: 24px; }
+      .leftnav a:hover {
+        background-color: #ddd;
+        color: black; }
+      .leftnav a.active_left {
+        background-color: #44803f;
+        font-weight: bold; }
+
+.post {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;}
+  .post span {
+    font-weight: bold; }
+
+.left span {
+  float: left;
+  margin-right: 20px;
+}
+
+.right span {
+  float: right;
+  margin-left: 20px;
+}
+
+time {
+  float: right;
+}     
+      
