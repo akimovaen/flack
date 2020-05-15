@@ -11,17 +11,16 @@
 {% block leftnav %}
     <div id="channels">
     </div>
+    <form id="new_channel">
+        <input id="channel" type="text" autofocus autocomplete="off" placeholder="New channel">
+        <button>OK</button>
+    </form>
     <button id="create_channel">Create a new channel</button>
 {% endblock %}
 {% block main %}
     <form id="display_name">
         <div>Type in your display name that will eventually be associated with every your message.</div>
         <input id="name" type="text" autofocus autocomplete="off" placeholder="Display name">
-        <button>OK</button>
-    </form>
-
-    <form id="new_channel">
-        <input id="channel" type="text" autofocus autocomplete="off" placeholder="New channel">
         <button>OK</button>
     </form>
 
@@ -32,7 +31,4 @@
         <input id="post" type="text" autofocus autocomplete="off" placeholder="New post">
         <button>OK</button>
     </form>
-
-    <div id='test'></div>
-
 {% endblock %}

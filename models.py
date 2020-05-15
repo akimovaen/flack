@@ -10,24 +10,24 @@ class Post:
 
 
 class Channel:
-    counter = 0
 
     def __init__(self, name):
         self.name = name
         self.posts = []
+        self.counter = 0
 
     def add_post(self, post):
-        id = Channel.counter
+        id = self.counter
         if len(self.posts) == id:
             self.posts.append(post.post_info())
         else:
             self.posts.remove(self.posts[0])
             self.posts.append(post.post_info())
         
-        Channel.counter += 1
+        self.counter += 1
 
         if id == 99:
-            Channel.counter = 98
+            self.counter = 98
 
     def post_list(self):
         return self.posts

@@ -44,11 +44,23 @@
   border: 2px solid #dedede;
   background-color: #f1f1f1;
   border-radius: 5px;
-  padding: 10px;
-  margin: 10px 0;}
-  .post span {
-    font-weight: bold; }
+  padding: 5px;
+  margin: 5px 0;
+}
 
+.post::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+  .post div {
+    font-style: italic; }
+  
+  .post span {
+    font-weight: bold;
+  }
+  
 .left span {
   float: left;
   margin-right: 20px;
@@ -59,7 +71,23 @@
   margin-left: 20px;
 }
 
-time {
+.post time {
   float: right;
+  color: #aaa;
 }     
-      
+
+#new_post {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 67%;
+  border: 3px solid #73AD21;
+}
+
+#create_channel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 33%;
+  border: 3px solid #73AD21;
+}

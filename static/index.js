@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Connect to websocket
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
     // Set display name of user.
     if (!localStorage.getItem('user')) {
         // Display the form.
@@ -19,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load the start group.
     if (localStorage.getItem('group')) {
         load_channels(localStorage.getItem('group'));
+        load_posts();
     }    
     else {
         load_channels('first');
@@ -27,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set links up to load channels.
     document.querySelectorAll('.nav-link-top').forEach(link => {
         link.onclick = () => {
+            localStorage.setItem('group', link);
             load_channels(link.dataset.group);
             return false;
         };
@@ -35,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Display the creation channel form.
     document.querySelector('#create_channel').onclick = function() {
         document.querySelector('#new_channel').style.display = 'block';
+        return false;
     };
 
     // Create a new channel.
@@ -72,50 +79,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
-    // Create a new post.
-    document.querySelector('#new_post').onsubmit = function() {
-        const request = new XMLHttpRequest();
-        const new_post = document.querySelector('#post').value;
-        const group = document.querySelector('.active_top').dataset.group;
-        let channel;
-        if (localStorage.getItem('channel')) {
-            channel = localStorage.getItem('channel');
-        }    
-        else {
-            alert('Select a channel');
-        }
+    // When connected, configure submitting new_post
+    socket.on('connect', () => {
     
-        request.open('POST', '/create_post');
-
-        // Clear the creation post form.
-        document.querySelector('#post').value = '';
-        
-        // Callback function for when request completes
-        request.onload = () => {
-            // Extract JSON data from request
-            const data = JSON.parse(request.responseText);
-            // Update the result div
-            if (data.success) {
-                load_posts();
-            }
+        // Create a new post.
+        document.querySelector('#new_post').onsubmit = function() {
+            const new_post = document.querySelector('#post').value;
+            const group = document.querySelector('.active_top').dataset.group;
+            let channel;
+            if (localStorage.getItem('channel')) {
+                channel = localStorage.getItem('channel');
+            }    
             else {
-                alert(data.message);
+                alert('Select a channel');
             }
-        };
 
-        // Add data to send with request
-        const data = new FormData();
-        data.append('new_post', new_post);        
-        data.append('group', group);
-        data.append('channel', channel);       
-        data.append('user', user);
-        data.append('timestamp', Date.now())
+            // Clear the creation post form.
+            document.querySelector('#post').value = '';
         
-        // Send request
-        request.send(data);
-        return false;
-    };
+            // Add data to send with request
+            const data = {
+                'new_post': new_post,
+                'group': group,
+                'channel': channel,
+                'user': user,
+                'timestamp': Date.now()
+            };
+        
+            // Send request
+            socket.emit('submit post', data);
+            return false;
+        };
+    });
 
+    // When a new post is announced, add to the unordered list
+    socket.on('announce post', function(data) {
+        console.log('PONG!');
+        add_post(data);
+    });
+    
     // Renders contents of new channel.
     function load_channels(name) {
         // Set active group.
@@ -139,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
             data.forEach(add_channel);
             
             // Set links up to load posts.
-            document.querySelectorAll('._link_left').forEach(function(button) {
-                button.onclick = function() {
-                    localStorage.setItem('channel', button.innerHTML)
+            document.querySelectorAll('._link_left').forEach(function(link) {
+                link.onclick = function() {
+                    localStorage.setItem('channel', link.dataset.channel)
                     load_posts();
                     return false;
                 };
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const channel = localStorage.getItem('channel');
         document.querySelectorAll('._link_left').forEach (link => {
             link.classList.remove("active_left");
-            if (link.innerHTML === channel) {
+            if (link.dataset.channel === channel) {
                 link.classList.add("active_left");
             }
             return false;
@@ -192,42 +194,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add a new channel with given contents to DOM.
     function add_channel(contents) {
         // Create new channel.
-        const channel = document.createElement('button');
-        // channel.href = '#';
+        const p = document.createElement('p');
+        const channel = document.createElement('a');
+        channel.href = '';
         channel.className = '_link_left';
         channel.dataset.channel = contents;
         channel.innerHTML = contents;
+        p.appendChild(channel);
 
         // Add channel to DOM.
-        document.querySelector('#channels').appendChild(channel);
+        document.querySelector('#channels').append(p);
     }
         
-
     function add_post(content) {
-        document.querySelector('#test').innerHTML = content.timestamp;
         // Create new post.
         const post = document.createElement('div');
         post.className = 'post';
+        
         if (content.user === user) {
-            post.className = 'right';
+            post.classList.add = 'right';
         }
         else {
-            post.className = 'left';
+            post.classList.add = 'left';
         }
 
-        const span = document.createElement('div');
-        span.innerHTML = content.user;
-        post.appendChild(span);
+        const display_name = document.createElement('span');
+        display_name.innerHTML = content.user;
+        post.appendChild(display_name);
 
-        // const p = post.createElement('p');
-        post.innerHTML = content.text;
+        const message = document.createElement('div');
+        message.innerHTML = content.text;
+        post.appendChild(message);
 
         const time = document.createElement('time');
-        time.innerHTML = new Date(content.timestamp);
+        const date = new Date(parseInt(content.timestamp));
+        time.innerHTML = date.toLocaleString();
         post.appendChild(time);
   
         // Add post to DOM.
-        document.querySelector('#posts').appendChild(post);
+        document.querySelector('#posts').append(post);
     }
-
 });

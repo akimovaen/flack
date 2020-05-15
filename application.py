@@ -46,21 +46,21 @@ def create_channel():
     return jsonify({"success": True})
 
 
-@app.route("/create_post", methods=["POST"])
-def create_post():
-    channel_name = request.form.get("channel")
-    group_name = request.form.get("group")
-    text = request.form.get("new_post")
-    user = request.form.get("user")
-    timestamp = request.form.get("timestamp")
+@socketio.on("submit post")
+def create_post(data):
+    channel_name = data["channel"]
+    group_name = data["group"]
+    text = data["new_post"]
+    user = data["user"]
+    timestamp = data["timestamp"]
     channels = channel_search(group_name)
-    
+    new_post = Post(user, timestamp, text)    
+
     for channel in channels:
         if channel.name == channel_name:
-            new_post = Post(user, timestamp, text)
             channel.add_post(new_post)
 
-    return jsonify({"success": True})
+    emit("announce post", new_post.post_info(), broadcast=True)
 
 
 @app.route("/posts", methods=["POST"])
