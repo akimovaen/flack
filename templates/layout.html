@@ -6,25 +6,68 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" href="/static/style.css">
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
         <script src="static/index.js"></script>
+        <script id="post_template_left" type="text/x-handlebars-template">
+            <div class="post left">
+                {% raw -%}
+                    <span>{{ user }}</span>
+                    <div>{{ text }}</div>
+                    <time>{{ date }}</time>
+                    <p hidden>{{ timestamp }}</p>
+                {%- endraw %}
+            </div>
+        </script>
+        <script id="post_template_right" type="text/x-handlebars-template">
+            <div class="post right">
+                {% raw -%}
+                    <button type="button" class="remove_button"
+                     onclick="document.querySelector('#remove').style.display='block';
+                     this.parentElement.classList.add('deleted')">x</button>
+                    <span>{{ user }}</span>
+                    <div>{{ text }}</div>
+                    <time>{{ date }}</time>
+                    <p hidden>{{ timestamp }}</p>
+                {%- endraw %}
+            </div>
+            <div id="remove" class="modal">
+                <span onclick="document.querySelector('#remove').style.display='none'" class="close" title="Close Modal">&times;</span>
+                <form class="modal-content">
+                  <div class="container">
+                    <h1>Delete Message</h1>
+                    <p>Are you sure you want to delete your message?</p>
+              
+                    <div class="clearfix">
+                      <button type="button" class="cancelbtn">Cancel</button>
+                      <button type="button" class="deletebtn1">Delete for you</button>
+                      <button type="button" class="deletebtn">Delete for everyone</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
+        </script>
 
-
-        <title>{% block title %}{% endblock %}</title>
+        <title>Flack</title>
     </head>
     <body>
         <div class="topnav">
             {% block topnav %}{% endblock %}
         </div>
-        <div class="row">
-            <div class="col-sm-3">    
-                <div class="leftnav">
-                    {% block leftnav %}{% endblock %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3">    
+                    <div class="leftnav">
+                        {% block leftnav %}{% endblock %}
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-9">    
-                {% block main %}{% endblock %}
+                <div class="col-sm-9">    
+                    {% block main %}{% endblock %}
+                </div>
             </div>
         </div>
     </body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </html>
 

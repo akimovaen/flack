@@ -36,7 +36,8 @@ def create_channel():
     
     for channel in channels:
         if channel.name == name:
-            return jsonify({"success": False, "message": "Such name of channel exists."})
+            message = "Such name of channel exists."
+            return jsonify({"success": False, "message": message})
     
     for group in CHANNEL_LIST:
         if group.name == group_name:
@@ -61,6 +62,24 @@ def create_post(data):
             channel.add_post(new_post)
 
     emit("announce post", new_post.post_info(), broadcast=True)
+
+
+@socketio.on("delete post")
+def delete_post(data):
+    channel_name = data["channel"]
+    group_name = data["group"]
+    user = data["user"]
+    timestamp = data["timestamp"]
+    channels = channel_search(group_name)
+    result = ''
+
+    for channel in channels:
+        if channel.name == channel_name:
+            result = channel.delete_post(user, timestamp)
+
+    data_emit = {'result': result, 'user': user, 'timestamp': timestamp}
+
+    emit("deleted post", data_emit, broadcast=True)
 
 
 @app.route("/posts", methods=["POST"])

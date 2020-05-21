@@ -32,6 +32,15 @@ class Channel:
     def post_list(self):
         return self.posts
 
+    def delete_post(self, user, timestamp):
+        for i in self.posts:
+            if i["user"] == user and i["timestamp"] == int(timestamp):
+                self.posts.remove(i)
+                self.counter -= 1
+                return True
+        return False
+
+
 class Group:
 
     def __init__(self, name):

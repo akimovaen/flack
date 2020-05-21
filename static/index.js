@@ -3,16 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
+
     // Set display name of user.
     if (!localStorage.getItem('user')) {
         // Display the form.
         document.querySelector('#display_name').style.display = "block";
+        document.querySelector('#name').focus();
         // Save a display name.
         document.querySelector('#display_name').onsubmit = function() {
             var user = document.querySelector('#name').value;
             localStorage.setItem('user', user);
             // Hide the form.
-            document.querySelector('#display_name').style.display = "none";
+            document.querySelector('#display_name').style.animationPlayState = 'running';
+            document.querySelector('#display_name').addEventListener('animationend', () =>  {
+                document.querySelector('#display_name').style.display = "none";
+            });
         };
     }    
     // Load display name of user.
@@ -20,29 +25,36 @@ document.addEventListener('DOMContentLoaded', () => {
         var user = localStorage.getItem('user');
     }
 
+
     // Load the start group.
     if (localStorage.getItem('group')) {
         load_channels(localStorage.getItem('group'));
         load_posts();
     }    
     else {
+        localStorage.setItem('group', 'first');
         load_channels('first');
     }
+
 
     // Set links up to load channels.
     document.querySelectorAll('.nav-link-top').forEach(link => {
         link.onclick = () => {
-            localStorage.setItem('group', link);
+            localStorage.setItem('group', link.dataset.group);
             load_channels(link.dataset.group);
+            clear_posts();
             return false;
         };
     });
 
+
     // Display the creation channel form.
-    document.querySelector('#create_channel').onclick = function() {
+    document.querySelector('.create_channel').onclick = function() {
         document.querySelector('#new_channel').style.display = 'block';
+        document.querySelector('#channel').focus();
         return false;
     };
+
 
     // Create a new channel.
     document.querySelector('#new_channel').onsubmit = function() {
@@ -63,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 localStorage.setItem('channel', new_channel);                
                 load_channels(group);
+                clear_posts();
             }
             else {
                 alert(data.message);
@@ -79,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
+
     // When connected, configure submitting new_post
     socket.on('connect', () => {
     
@@ -92,6 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }    
             else {
                 alert('Select a channel');
+            }
+            if (!user) {
+                alert('Type your display name.')
             }
 
             // Clear the creation post form.
@@ -114,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When a new post is announced, add to the unordered list
     socket.on('announce post', function(data) {
-        console.log('PONG!');
         add_post(data);
     });
     
@@ -141,12 +157,23 @@ document.addEventListener('DOMContentLoaded', () => {
             data.forEach(add_channel);
             
             // Set links up to load posts.
-            document.querySelectorAll('._link_left').forEach(function(link) {
+            document.querySelectorAll('.nav-link-left').forEach(function(link) {
+                if (link.dataset.channel === localStorage.getItem('channel')) {
+                    link.classList.add("active_left");
+                }
                 link.onclick = function() {
-                    localStorage.setItem('channel', link.dataset.channel)
+                    localStorage.setItem('channel', link.dataset.channel);
+                    // Set active channel.
+                    document.querySelectorAll('.nav-link-left').forEach (nav => {
+                        nav.classList.remove("active_left");
+                    });
+                    link.classList.add("active_left");
                     load_posts();
+                    document.querySelector('#post').focus();
+
                     return false;
                 };
+                return false;
             });
         };
         
@@ -159,20 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Renders contents of new post.
     function load_posts() {
-        // Set active channel.
         const channel = localStorage.getItem('channel');
-        document.querySelectorAll('._link_left').forEach (link => {
-            link.classList.remove("active_left");
-            if (link.dataset.channel === channel) {
-                link.classList.add("active_left");
-            }
-            return false;
-        });
-        
-        const posts = document.querySelector('#posts');
-        while(posts.firstChild){
-            posts.removeChild(posts.firstChild);
-        }
+        clear_posts();       
         
         const request = new XMLHttpRequest();
         request.open('POST', `/posts`);
@@ -194,44 +209,136 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add a new channel with given contents to DOM.
     function add_channel(contents) {
         // Create new channel.
-        const p = document.createElement('p');
         const channel = document.createElement('a');
         channel.href = '';
-        channel.className = '_link_left';
+        channel.className = 'nav-link-left';
         channel.dataset.channel = contents;
         channel.innerHTML = contents;
-        p.appendChild(channel);
 
         // Add channel to DOM.
-        document.querySelector('#channels').append(p);
+        document.querySelector('#channels').append(channel);
+
     }
+
+    
+    const post_template_left = Handlebars.compile(document.querySelector('#post_template_left').innerHTML);    
+    const post_template_right = Handlebars.compile(document.querySelector('#post_template_right').innerHTML);    
+
+    function add_post(contents) {
         
-    function add_post(content) {
         // Create new post.
-        const post = document.createElement('div');
-        post.className = 'post';
-        
-        if (content.user === user) {
-            post.classList.add = 'right';
+        const date = new Date(parseInt(contents.timestamp));
+        let post;
+        if (contents.user === user) {
+            post = post_template_right({
+                'user': contents.user,
+                'text': contents.text,
+                'timestamp': contents.timestamp,
+                'date': date.toLocaleString()});
         }
         else {
-            post.classList.add = 'left';
-        }
+            post = post_template_left({
+                'user': contents.user,
+                'text': contents.text,
+                'timestamp': contents.timestamp,
+                'date': date.toLocaleString()});
+        }            
 
-        const display_name = document.createElement('span');
-        display_name.innerHTML = content.user;
-        post.appendChild(display_name);
-
-        const message = document.createElement('div');
-        message.innerHTML = content.text;
-        post.appendChild(message);
-
-        const time = document.createElement('time');
-        const date = new Date(parseInt(content.timestamp));
-        time.innerHTML = date.toLocaleString();
-        post.appendChild(time);
-  
         // Add post to DOM.
-        document.querySelector('#posts').append(post);
+        document.querySelector('#posts').innerHTML += post;
+        document.querySelector('#posts').scrollTop = document.querySelector('#posts').scrollHeight;
+        
+        var modal = document.querySelector('#remove');        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                return false;
+            }
+    
+            if (event.target == document.querySelector('.cancelbtn')) {
+                modal.style.display = "none";
+                const post = document.querySelector('.deleted');
+                post.classList.remove('deleted');
+                return false;
+            }
+    
+            if (event.target == document.querySelector('.deletebtn')) {
+                modal.style.display = "none";
+                const post = document.querySelector('.deleted');
+                let timein = post.querySelector('p').innerHTML;
+                delete_post(timein);
+                return false;
+            }
+            if (event.target == document.querySelector('.deletebtn1')) {
+                modal.style.display = "none";
+                const post = document.querySelector('.deleted');
+                hide_post(post);
+                post.classList.remove('deleted');
+                return false;
+            }
+        };
+
+    }
+    
+
+    function clear_posts() {
+        const posts = document.querySelector('#posts');
+        while(posts.firstChild){
+            posts.removeChild(posts.firstChild);
+        }
+        return false;  
+    }
+
+
+    function delete_post(time) {
+        const group = document.querySelector('.active_top').dataset.group;
+        const channel = document.querySelector('.active_left').dataset.channel;
+    
+        if (socket.connected) {
+            // Add data to send with request
+            const data = {
+                'group': group,
+                'channel': channel,
+                'user': user,
+                'timestamp': time
+            };
+        
+            // Send request
+            socket.emit('delete post', data);
+            return false;
+        }
+    }
+
+
+    socket.on('deleted post', function(result) {
+        if (result.result == false) {
+            if (document.querySelector('.deleted')) {
+                document.querySelector('.deleted').classList.remove('deleted');
+            }
+        }
+        else {
+            if (document.querySelector('.deleted')) {
+                hide_post(document.querySelector('.deleted'));
+            }
+            else {
+                document.querySelectorAll('.left').forEach(post => {
+                   const post_user = post.querySelector('span').innerHTML; 
+                   const post_time = post.querySelector('p').innerHTML;
+                   if (post_user === result.user && post_time === result.timestamp) {
+                       hide_post(post);
+                   }
+                });
+            }
+        }
+        return false;
+    });
+
+    
+    function hide_post(post) {
+        post.style.animationPlayState = 'running';
+        post.addEventListener('animationend', () =>  {
+            post.remove();
+            return false;
+        });
     }
 });

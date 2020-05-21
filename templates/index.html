@@ -1,34 +1,45 @@
 {% extends "layout.html" %}
 
-{% block title %}
-
-{% endblock %}
 {% block topnav %}
-    <a href="" class="nav-link-top" data-group="first">First Group</a>
-    <a href="" class="nav-link-top" data-group="second">Second Group</a>
-    <a href="" class="nav-link-top" data-group="third">Third Group</a>
+    <a href="" class="nav-link-top" data-group="first">HTML</a>
+    <a href="" class="nav-link-top" data-group="second">CSS</a>
+    <a href="" class="nav-link-top" data-group="third">Javascript</a>
 {% endblock %}
 {% block leftnav %}
     <div id="channels">
     </div>
     <form id="new_channel">
-        <input id="channel" type="text" autofocus autocomplete="off" placeholder="New channel">
-        <button>OK</button>
+        <div class="form-group">
+            <label for="channel">Type channel name: </label>
+            <input id="channel" type="text" autofocus autocomplete="off" placeholder="New channel">
+        </div>
+        <button type="submit" class="btn btn-info">OK</button>
     </form>
-    <button id="create_channel">Create a new channel</button>
+    <div class="create_channel">
+        <svg class="bi bi-plus-square-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2zm6.5 4a.5.5 0 00-1 0v3.5H4a.5.5 0 000 1h3.5V12a.5.5 0 001 0V8.5H12a.5.5 0 000-1H8.5V4z" clip-rule="evenodd"/>
+        </svg>
+        <span> Create a new channel</span>
+    </div>
 {% endblock %}
 {% block main %}
     <form id="display_name">
-        <div>Type in your display name that will eventually be associated with every your message.</div>
-        <input id="name" type="text" autofocus autocomplete="off" placeholder="Display name">
-        <button>OK</button>
+        <div class="form-group">
+            <label for="name">Type display name: </label>
+            <input id="name" type="text" autofocus autocomplete="off" placeholder="Display name">
+            <small id="name_help_block" class="form-text text-muted">
+            Your display name will eventually be associated with every your message.
+            </small>
+        </div>
+        <button type="submit" class="btn btn-info">OK</button>
     </form>
+    <div id="test"></div>
 
     <div id="posts">
     </div>
 
-    <form id="new_post">
+    <form id="new_post" class="form-inline">
         <input id="post" type="text" autofocus autocomplete="off" placeholder="New post">
-        <button>OK</button>
+        <button type="submit" class="btn btn-info">OK</button>
     </form>
 {% endblock %}

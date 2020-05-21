@@ -1,51 +1,105 @@
+@keyframes hide_form {
+  from {
+    opacity: 1;
+    width: 60%;
+    font-size: large;
+    display: block;
+    border: 2px solid #4CAF50;
+    text-align: center;
+  }
+  to {
+    opacity: 0;
+    width: 30%;
+    font-size: xx-small;
+    display: block;
+    border: 2px solid #4CAF50;
+  }
+}
+
+@keyframes hide_post {
+  0% {
+      opacity: 1;
+      }
+  100% {
+      opacity: 0;
+      }
+}
+
 #display_name {
-    display: none;
+  padding: 30px;
+  margin: 30px;
+  display: none;
+  animation-name: hide_form;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+  animation-play-state: paused;    
 }
 
 #new_channel {
     display: none;
+    border: 1px solid navy;
 }
 
 .topnav {
-    background-color: #4CAF50;
+    background-color: #58d15c;
     overflow: hidden; }
     .topnav a {
       float: left;
       color: #ddd;
       text-align: center;
       padding: 10px 40px;
+      width: 30%;
       text-decoration: none;
       font-size: 18px; }
       .topnav a:hover {
         background-color: #ddd;
         color: black; }
       .topnav a.active_top {
-        background-color: #44803f;
+        background-color: #37c02b;
         color: #ddd; }
 
 .leftnav {
-    background-color: #4cafa7;
-    overflow: hidden; }
+    background-color: #12c1f7;
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 100%; }
     .leftnav a {
-      float: left;
+      float: inline-start;
+      display: block;
       color: #ddd;
       text-align: left;
       padding: 10px 10px;
       text-decoration: none;
-      font-size: 24px; }
+      font-size: 16px; }
       .leftnav a:hover {
-        background-color: #ddd;
+        background-color: #12c1f7;
+        font-size: 20px;
         color: black; }
       .leftnav a.active_left {
-        background-color: #44803f;
-        font-weight: bold; }
+        background-color: #ddd;
+        color: black;
+        border: 1px solid #07acdf; }
 
 .post {
   border: 2px solid #dedede;
-  background-color: #f1f1f1;
   border-radius: 5px;
-  padding: 5px;
   margin: 5px 0;
+  padding: 5px;
+  overflow: hidden;
+  animation-name: hide_post;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-play-state: paused;    
+}
+
+.left {
+  margin-right: 60px;
+  background-color: #f1f1f1;
+}
+
+.right {
+  margin-left: 60px;
+  background-color: #dad8d8;
 }
 
 .post::after {
@@ -54,12 +108,13 @@
   display: table;
 }
 
-  .post div {
-    font-style: italic; }
+.post div {
+  font-style: italic;
+}
   
-  .post span {
-    font-weight: bold;
-  }
+.post span {
+  font-weight: bold;
+}
   
 .left span {
   float: left;
@@ -74,20 +129,118 @@
 .post time {
   float: right;
   color: #aaa;
+  font-size: smaller;
+  line-height: 1.0;
 }     
 
 #new_post {
   position: fixed;
   bottom: 0;
   right: 0;
-  width: 67%;
-  border: 3px solid #73AD21;
+  width: 75%;
+  border: 3px solid #58d15c;
+  margin-block-end: 0em;
+}
+
+#new_post input{
+  width: 90%;
 }
 
 #create_channel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  border: 1px solid navy;
+  float: left;
+  width: 100%;
+  color: navy;
+}
+
+#create_channel:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.container-fluid {
+  height: 90%;
+}
+
+.row {
+  height: 100%;
+}
+
+.col-sm-3 {
+  height: 100%;
+}
+
+#posts {
+  overflow-y: scroll;
+  height: 95%;
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1; 
+  left: 25%;
+  top: 30%;
+  width: 50%; 
+  height: 40%; 
+  overflow: auto; 
+  background-color: #dde0e7;
+  opacity: 0.9;
+  padding-top: 50px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 10% auto;
+  border: 1px solid red;
+  width: 100%;
+}
+
+.container {
+  padding: 6px;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #f1f1f1;
+}
+
+.close:hover,
+.close:focus {
+  color: #f1f1f1;
+  cursor: pointer;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.cancelbtn, .deletebtn, .deletebtn1 {
+  float: left;
   width: 33%;
-  border: 3px solid #73AD21;
+}
+
+.cancelbtn {
+  background-color: #f3f0f0;
+  color: black;
+}
+
+.deletebtn, .deletebtn1 {
+  background-color: #ccc;
+}
+
+.remove_button {
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  line-height: 90%;
+  background-color: #dad8d8;
+  color: red;
 }
