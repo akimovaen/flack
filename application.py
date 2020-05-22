@@ -55,13 +55,14 @@ def create_post(data):
     user = data["user"]
     timestamp = data["timestamp"]
     channels = channel_search(group_name)
-    new_post = Post(user, timestamp, text)    
+    new_post = Post(user, timestamp, text)
+    data_emit = {"post": new_post.post_info(), "channel": channel_name}
 
     for channel in channels:
         if channel.name == channel_name:
             channel.add_post(new_post)
 
-    emit("announce post", new_post.post_info(), broadcast=True)
+    emit("announce post", data_emit, broadcast=True)
 
 
 @socketio.on("delete post")

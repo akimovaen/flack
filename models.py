@@ -18,7 +18,7 @@ class Channel:
 
     def add_post(self, post):
         id = self.counter
-        if len(self.posts) == id:
+        if len(self.posts) <= id:
             self.posts.append(post.post_info())
         else:
             self.posts.remove(self.posts[0])

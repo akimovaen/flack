@@ -129,9 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // When a new post is announced, add to the unordered list
+    // When a new post is announced, add to the posts
     socket.on('announce post', function(data) {
-        add_post(data);
+        if (localStorage.getItem('channel') === data.channel) {
+            add_post(data.post);
+        }
     });
     
     // Renders contents of new channel.
